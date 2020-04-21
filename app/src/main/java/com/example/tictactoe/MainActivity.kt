@@ -4,13 +4,10 @@ import android.animation.ObjectAnimator
 import android.animation.PropertyValuesHolder
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.activity_main.view.*
-import com.example.tictactoe.MainActivity.Player
 
 
 
@@ -45,15 +42,16 @@ class MainActivity : AppCompatActivity() {
         val clickListener = View.OnClickListener { view ->
 
             when (view.getId()){
-                R.id.img1 -> img1ClickAction(img1)
-                R.id.img2 -> img1ClickAction(img2)
-                R.id.img3 -> img1ClickAction(img3)
-                R.id.img4 -> img1ClickAction(img4)
-                R.id.img5 -> img1ClickAction(img5)
-                R.id.img6 -> img1ClickAction(img6)
-                R.id.img7 -> img1ClickAction(img7)
-                R.id.img8 -> img1ClickAction(img8)
-                R.id.img9 -> img1ClickAction(img9)
+                R.id.img1 -> imgClickAction(img1)
+                R.id.img2 -> imgClickAction(img2)
+                R.id.img3 -> imgClickAction(img3)
+                R.id.img4 -> imgClickAction(img4)
+                R.id.img5 -> imgClickAction(img5)
+                R.id.img6 -> imgClickAction(img6)
+                R.id.img7 -> imgClickAction(img7)
+                R.id.img8 -> imgClickAction(img8)
+                R.id.img9 -> imgClickAction(img9)
+                R.id.resetButton -> resetTheGame()
                 }
             }
 
@@ -67,14 +65,14 @@ class MainActivity : AppCompatActivity() {
             img7.setOnClickListener(clickListener)
             img8.setOnClickListener(clickListener)
             img9.setOnClickListener(clickListener)
+            resetButton.setOnClickListener(clickListener)
         }
 
-    private fun img1ClickAction(img: ImageView) {
-//        val tiTag = Integer.parseInt(img.getTag().toString())
-        Log.i("TESTY", img.getTag().toString())
-        if (gameBoard[Integer.parseInt(img.getTag().toString())] == null && gameOver == false){
-
-            gameBoard[Integer.parseInt(img.getTag().toString()) ] = currentPlayer
+    /* Actions that happen when player presses a spot in the grid.
+    * Animations & change of turns */
+    private fun imgClickAction(img: ImageView) {
+        if (gameBoard[Integer.parseInt(img.tag.toString())] == null && !gameOver){
+            gameBoard[Integer.parseInt(img.tag.toString()) ] = currentPlayer
 
             val pvhX = PropertyValuesHolder.ofFloat("translationX", -400f, 0f)
             val alphaVal = PropertyValuesHolder.ofFloat("alpha", 1.0f)
@@ -83,21 +81,21 @@ class MainActivity : AppCompatActivity() {
                 duration = 1100
                 start()
             }
-            if (currentPlayer == Player.ONE){
+
+            if(currentPlayer == Player.ONE){
                 img.setImageResource(R.drawable.x_img)
                 currentPlayer = Player.TWO
-            }else {
+            } else {
                 img.setImageResource(R.drawable.circle_img)
                 currentPlayer = Player.ONE
             }
         }
 
-        checkWinCondition(img, currentPlayer)
+        checkWinCondition(img)
     }
 
-    private fun checkWinCondition(img: ImageView, currentPlayer: MainActivity.Player) {
-
-
+    /* Checks if one symbol has completed a row or a column */
+    private fun checkWinCondition(img: ImageView) {
         for ( winnerColumns in winnerRowsColumns){
             if (gameBoard[winnerColumns[0]] ==
                 gameBoard[winnerColumns[1]]
@@ -110,6 +108,32 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+
+    }
+
+    /* Reset Game Function */
+    private fun resetTheGame() {
+
+        for (index in 0 until gridLayout.childCount) {
+
+            val imageView = gridLayout.getChildAt(index) as ImageView
+            imageView.setImageDrawable(null)
+            imageView.alpha = 0.2f
+        }
+
+        currentPlayer = Player.ONE
+        gameBoard[0] = null
+        gameBoard[1] = null
+        gameBoard[2] = null
+        gameBoard[3] = null
+        gameBoard[4] = null
+        gameBoard[5] = null
+        gameBoard[6] = null
+        gameBoard[7] = null
+        gameBoard[8] = null
+
+
+        gameOver = false
 
     }
 
