@@ -7,8 +7,12 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.ImageView
+import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_main.view.*
+import com.example.tictactoe.MainActivity.Player
+
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -16,7 +20,22 @@ class MainActivity : AppCompatActivity() {
         ONE, TWO
     }
 
+    var gameOver = false
+
     var currentPlayer: Player = Player.ONE
+    var gameBoard = arrayOfNulls<Player>(9)
+
+    var winnerRowsColumns = arrayOf(
+        intArrayOf(0, 1, 2),
+        intArrayOf(3, 4, 5),
+        intArrayOf(6, 7, 8),
+        intArrayOf(0, 3, 6),
+        intArrayOf(1, 4, 7),
+        intArrayOf(2, 5, 8),
+        intArrayOf(0, 4, 8),
+        intArrayOf(2, 4, 6)
+    )
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,21 +70,48 @@ class MainActivity : AppCompatActivity() {
         }
 
     private fun img1ClickAction(img: ImageView) {
-        val pvhX = PropertyValuesHolder.ofFloat("translationX", -400f, 0f)
-        val alphaVal = PropertyValuesHolder.ofFloat("alpha", 1.0f)
-        val rotation = PropertyValuesHolder.ofFloat("rotation" , 360f)
-        ObjectAnimator.ofPropertyValuesHolder( img, pvhX, alphaVal, rotation ).apply {
-            duration = 1500
-            start()
-        }
-        if (currentPlayer == Player.ONE){
-            img.setImageResource(R.drawable.x_img)
-            currentPlayer = Player.TWO
-        }else {
-            img.setImageResource(R.drawable.circle_img)
-            currentPlayer = Player.ONE
+//        val tiTag = Integer.parseInt(img.getTag().toString())
+        Log.i("TESTY", img.getTag().toString())
+        if (gameBoard[Integer.parseInt(img.getTag().toString())] == null && gameOver == false){
+
+            gameBoard[Integer.parseInt(img.getTag().toString()) ] = currentPlayer
+
+            val pvhX = PropertyValuesHolder.ofFloat("translationX", -400f, 0f)
+            val alphaVal = PropertyValuesHolder.ofFloat("alpha", 1.0f)
+            val rotation = PropertyValuesHolder.ofFloat("rotation" , 360f)
+            ObjectAnimator.ofPropertyValuesHolder( img, pvhX, alphaVal, rotation ).apply {
+                duration = 1100
+                start()
+            }
+            if (currentPlayer == Player.ONE){
+                img.setImageResource(R.drawable.x_img)
+                currentPlayer = Player.TWO
+            }else {
+                img.setImageResource(R.drawable.circle_img)
+                currentPlayer = Player.ONE
+            }
         }
 
+        checkWinCondition(img, currentPlayer)
     }
+
+    private fun checkWinCondition(img: ImageView, currentPlayer: MainActivity.Player) {
+
+
+        for ( winnerColumns in winnerRowsColumns){
+            if (gameBoard[winnerColumns[0]] ==
+                gameBoard[winnerColumns[1]]
+                && gameBoard[winnerColumns[1]]
+                == gameBoard[winnerColumns[2]] && gameBoard[winnerColumns[0]] != null){
+
+                gameOver = true
+
+                Toast.makeText(this, "WINNER", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+
+    }
+
 }
 
